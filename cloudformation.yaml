@@ -3,7 +3,7 @@ Resources:
   ECSCluster:
     Type: 'AWS::ECS::Cluster'
     Properties:
-      ClusterName: baba-text-bot-cluster
+      ClusterName: baba-text-bot-cluster-2
   ECSTaskDefinition:
     Type: 'AWS::ECS::TaskDefinition'
     Properties:
