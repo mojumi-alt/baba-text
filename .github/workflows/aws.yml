@@ -53,7 +53,7 @@ jobs:
         name: ${{ env.CLOUDFORMATION_STACK_NAME }}
         template: cloudformation.yaml
         parameter-overrides: >-
-          Image=${{ env.ECR_REPOSITORY }}:${{ github.sha }},
+          Image=${{ steps.login-ecr.outputs.registry }}/${{ env.ECR_REPOSITORY }}:${{ github.sha }},
           botTokenSecretArn=${{ env.BOT_TOKEN_SECRET_ARN }},
           ECSExecutionRoleArn=${{ env.ECS_EXECUTION_ROLE_ARN }},
           ECSSecurityGroup=${{ env.ECS_SECURITY_GROUP }},
