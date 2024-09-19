@@ -10,7 +10,7 @@ Resources:
       ContainerDefinitions:
         - Secrets:
             - Name: DISCORD_BOT_TOKEN
-              ValueFrom: !Ref botTokenArn
+              ValueFrom: !Ref botTokenSecretArn
           Essential: true
           Image: !Ref Image
           LogConfiguration:
@@ -45,20 +45,20 @@ Resources:
       TaskDefinition: !Ref ECSTaskDefinition
 
 Parameters:
-  botTokenArn:
-    Description: ARN of the bot token
+  botTokenSecretArn:
+    Description: ARN of secret containing the bot token
     Type: String
   Image:
     Description: Image to deploy
     Type: String 
   ECSExecutionRoleArn:
-    Description: ARN of the execution role
+    Description: ARN of the execution role (needs AmazonECSTaskExecutionRolePolicy + SecretsManagerRead)
     Type: String
   ECSSecurityGroup:
-    Description: Id of the security group the container will run in
+    Description: Id of the security group the container will run in (no ingress, only egress)
     Type: String
   ECSSubnet:
-    Description: If of the subnet the container will run in
+    Description: If of the subnet the container will run in (no ingress, only egress)
     Type: String
 
 

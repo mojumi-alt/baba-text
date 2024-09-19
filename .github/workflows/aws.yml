@@ -1,0 +1,60 @@
+name: Deploy to AWS
+
+on:
+  push:
+    branches: [ "master" ]
+
+env:
+  AWS_REGION: eu-central-1
+  ECR_REPOSITORY: 649287486950.dkr.ecr.eu-central-1.amazonaws.com/baba-text-bot
+  ECS_STACK_NAME: baba-text-bot
+  BOT_TOKEN_SECRET_ARN: arn:aws:secretsmanager:eu-central-1:649287486950:secret:baba-text-bot-token-Z7nM9y
+  ECS_EXECUTION_ROLE_ARN: arn:aws:iam::649287486950:role/ecsTaskExecutionRole
+  ECS_SECURITY_GROUP: sg-0a4cc2e9b51cc4695
+  ECS_SUBNET: subnet-0cfad56fcd95026a0
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    environment: production
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ env.AWS_REGION }}
+
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v1
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+    - name: Deploy to AWS CloudFormation
+      uses: aws-actions/aws-cloudformation-github-deploy@v1
+      with:
+        name: ${{ env.ECS_STACK_NAME }}
+        template: cloudformation.yaml
+        parameter-overrides: >-
+            Image=${{ env.ECR_REPOSITORY }}:${{ github.sha }}
+            botTokenSecretArn=${{ env.BOT_TOKEN_SECRET_ARN }}
+            ECSExecutionRoleArn=${{ env.ECS_EXECUTION_ROLE_ARN }}
+            ECSSecurityGroup=${{ env.ECS_SECURITY_GROUP }}
+            ECSSubnet=${{ env.ECS_SUBNET }}
