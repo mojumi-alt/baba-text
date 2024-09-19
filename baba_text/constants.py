@@ -44,4 +44,13 @@ KNOWN_WORDS_TO_COLOR = {
     "wall": COLOR_PALETTE["gray"],
     "Float": COLOR_PALETTE["light_blue"],
     "flag": COLOR_PALETTE["yellow"],
+    "Blue": COLOR_PALETTE["blue"],
+    "Red": COLOR_PALETTE["red"],
+    "Green": COLOR_PALETTE["green"],
+    "Yellow": COLOR_PALETTE["yellow"],
+    "Pink": COLOR_PALETTE["pink"],
+    "Orange": COLOR_PALETTE["orange"],
+    "Purple": COLOR_PALETTE["purple"],
+    "White": COLOR_WHITE,
+    "Black": COLOR_PALETTE["black"],
 }
