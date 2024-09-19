@@ -52,8 +52,9 @@ jobs:
       with:
         name: ${{ env.ECS_STACK_NAME }}
         template: cloudformation.yaml
-        parameter-overrides: "Image=${{ env.ECR_REPOSITORY }}:${{ github.sha }}"
-          #botTokenSecretArn=${{ env.BOT_TOKEN_SECRET_ARN }}
-          #ECSExecutionRoleArn=${{ env.ECS_EXECUTION_ROLE_ARN }}
-          #ECSSecurityGroup=${{ env.ECS_SECURITY_GROUP }}
-          #ECSSubnet=${{ env.ECS_SUBNET }}
+        parameter-overrides: >-
+          Image=${{ env.ECR_REPOSITORY }}:${{ github.sha }},
+          botTokenSecretArn=${{ env.BOT_TOKEN_SECRET_ARN }},
+          ECSExecutionRoleArn=${{ env.ECS_EXECUTION_ROLE_ARN }},
+          ECSSecurityGroup=${{ env.ECS_SECURITY_GROUP }},
+          ECSSubnet=${{ env.ECS_SUBNET }}
