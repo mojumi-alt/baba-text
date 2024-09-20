@@ -6,15 +6,20 @@ import multiprocessing
 import os
 import json
 import queue
+import traceback
 
+BOT_REQUEST_TIMEOUT_SECONDS = 10
 
 def run_baba_text_gen(text: str, output_queue: multiprocessing.Queue):
     os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
     from baba_text.animated_text import AnimatedText
 
-    animated_text = AnimatedText(text)
-    output_queue.put(animated_text.write_to_buffer())
-
+    try:
+        animated_text = AnimatedText(text)
+        output_queue.put(animated_text.write_to_buffer())
+    except:
+        print(traceback.format_exc(), flush=True)
+        output_queue.put(None)
 
 def main():
     DISCORD_BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
@@ -43,11 +48,12 @@ def main():
         )
         process.start()
         try:
-            result = output_queue.get(timeout=10)
+            result = output_queue.get(timeout=BOT_REQUEST_TIMEOUT_SECONDS)
         except queue.Empty:
             await ctx.send("message is long. baba is sad.")
+            return
 
-        process.join()
+        process.join(timeout=1)
         if process.exitcode != 0 or result is None:
             await ctx.send("message has error. baba is sad.")
         else:
