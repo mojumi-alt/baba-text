@@ -1,8 +1,6 @@
 name: Deploy to AWS
 
-on:
-  push:
-    branches: [ "master" ]
+on: workflow_dispatch
 
 env:
   AWS_REGION: eu-central-1

@@ -1,5 +1,8 @@
 import pygame
 
+NEWLINE = "\n"
+TAB = "\t"
+SPACE = " "
 MASK_COLOR = pygame.Color(255, 255, 255)
 SPRITE_SIZE = 100
 BACKGROUND_COLOR = pygame.Color(49, 51, 56)
