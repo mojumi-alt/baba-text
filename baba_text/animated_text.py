@@ -9,14 +9,16 @@ from .constants import (
     ANIMATION_FRAME_COUNT,
     COLOR_PALETTE,
     KNOWN_WORDS_TO_COLOR,
+    NEWLINE,
+    TAB,
+    SPACE,
 )
-import re
 
 
 class AnimatedText:
     def __init__(self, text: str) -> None:
         assert text, "Text must not be empty"
-        self.__text = AnimatedText.__preprocess_input_text(text)
+        self.__tokens = AnimatedText.__tokenize_input_text(text)
 
         word_layout = self.__generate_word_layout()
         self.__size = (
@@ -27,31 +29,24 @@ class AnimatedText:
         self.__words = [
             AnimatedWord(word, box, *AnimatedText.__get_word_color(word))
             for word, box in zip(
-                filter(lambda x: x != "\t", re.split(" |\n", self.__text)), word_layout
+                AnimatedText.__remove_control_sequences(self.__tokens), word_layout
             )
         ]
 
     @staticmethod
-    def __preprocess_input_text(text) -> str:
-        result = ""
-        consolidate_characters = (" ", "\n")
-        for i in range(len(text)):
-            if (
-                len(result) > 0
-                and result[-1] in consolidate_characters
-                and text[i] in consolidate_characters
-            ):
-                continue
-            else:
-                result += text[i]
+    def __remove_control_sequences(tokens: list[str]) -> list[str]:
+        return list(filter(lambda x: x not in (TAB, NEWLINE), tokens))
 
-        delimiters = (" ", "\n")
-        for delimiter in delimiters:
-            result = delimiter.join(
-                filter(lambda x: len(x) > 0, result.split(delimiter))
-            )
+    @staticmethod
+    def __tokenize_input_text(text: str) -> list[str]:
+        # If we find a sequence of not space separated characters
+        # control chars like newline or tab we make them into words
+        result = text.replace(NEWLINE, SPACE + NEWLINE + SPACE).replace(
+            TAB, SPACE + TAB + SPACE
+        )
 
-        return result
+        # Ensure every word is separated by exactly one space
+        return list(filter(lambda x: len(x) > 0, result.split(SPACE)))
 
     def write_to_gif(self, filename: str) -> None:
         with open(filename, "wb") as f:
@@ -82,17 +77,21 @@ class AnimatedText:
 
     def __generate_word_layout(self) -> list[pygame.Rect]:
         result = []
-        for y, row in enumerate(self.__text.split("\n")):
-            for x, word in enumerate(row.split(" ")):
-                # Tab is skip character to allow aligning text
-                if word == "\t":
-                    continue
+        x = 0
+        y = 0
+        for token in self.__tokens:
+            if token == NEWLINE:
+                y += 1
+                x = 0
+                continue
+            elif token == TAB:
+                x += 1
+                continue
 
-                result.append(
-                    pygame.Rect(
-                        x * SPRITE_SIZE, y * SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE
-                    )
-                )
+            result.append(
+                pygame.Rect(x * SPRITE_SIZE, y * SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE)
+            )
+            x += 1
 
         return result
 
