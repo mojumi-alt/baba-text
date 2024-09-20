@@ -53,4 +53,13 @@ KNOWN_WORDS_TO_COLOR = {
     "Purple": COLOR_PALETTE["purple"],
     "White": COLOR_WHITE,
     "Black": COLOR_PALETTE["black"],
+    "blue": COLOR_PALETTE["blue"],
+    "red": COLOR_PALETTE["red"],
+    "green": COLOR_PALETTE["green"],
+    "yellow": COLOR_PALETTE["yellow"],
+    "pink": COLOR_PALETTE["pink"],
+    "orange": COLOR_PALETTE["orange"],
+    "purple": COLOR_PALETTE["purple"],
+    "white": COLOR_WHITE,
+    "black": COLOR_PALETTE["black"],
 }
