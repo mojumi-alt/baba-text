@@ -10,7 +10,26 @@ import traceback
 
 BOT_REQUEST_TIMEOUT_SECONDS = 10
 
-def run_baba_text_gen(text: str, output_queue: multiprocessing.Queue):
+# Certain sequences arrive in escaped form from discord.
+# The following sequences are "unescaped" with their replacements:
+UNESCAPE_SEQUENCES = [
+    ("\\n", "\n"),
+    ("\\t", "\t"),
+    ("\\:", ":"),
+    # hmmmm....
+    ("🙂", ":)"),
+    ("😦", ":("),
+]
+
+
+def preprocess_message(message: str) -> str:
+    message = message[len("!baba") :]
+    for sequence, replacement in UNESCAPE_SEQUENCES:
+        message = message.replace(sequence, replacement)
+    return message
+
+
+def run_baba_text_gen(text: str, output_queue: multiprocessing.Queue) -> None:
     os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
     from baba_text.animated_text import AnimatedText
 
@@ -20,6 +39,7 @@ def run_baba_text_gen(text: str, output_queue: multiprocessing.Queue):
     except:
         print(traceback.format_exc(), flush=True)
         output_queue.put(None)
+
 
 def main():
     DISCORD_BOT_TOKEN = os.getenv("DISCORD_BOT_TOKEN")
@@ -32,17 +52,12 @@ def main():
 
     intents = discord.Intents.default()
     intents.message_content = True
-
     bot = commands.Bot(command_prefix="!", intents=intents)
 
     @bot.command()
     async def baba(ctx: discord.ext.commands.context.Context):
         output_queue: multiprocessing.Queue = multiprocessing.Queue()
-        message = (
-            ctx.message.content[len("!baba") :]
-            .replace("\\t", "\t")
-            .replace("\\n", "\n")
-        )
+        message = preprocess_message(ctx.message.content)
         process = multiprocessing.Process(
             target=run_baba_text_gen, args=(message, output_queue)
         )
