@@ -15,7 +15,20 @@ permissions:
   contents: read
 
 jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    permissions: write-all
+
+    steps:
+      - name: 🗑 Delete deployment
+        uses: strumwolf/delete-deployment-environment@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          environment: production
+          onlyRemoveDeployments: true
+
   deploy:
+    needs: cleanup
     name: Deploy
     runs-on: ubuntu-latest
 
