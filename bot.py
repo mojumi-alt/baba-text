@@ -86,7 +86,7 @@ if __name__ == "__main__":
         logging.info("Setting up slash commands...")
         bot.tree.copy_global_to(guild=guild)
         synced = await bot.tree.sync(guild=guild)
-        logging.info(f"Synced {len(synced)} to build '{guild}'")
+        logging.info(f"Synced {len(synced)} commands to guild '{guild}'")
 
     @bot.event
     async def on_guild_remove(guild: discord.Guild) -> None:
