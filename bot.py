@@ -147,7 +147,7 @@ if __name__ == "__main__":
 
     @bot.command()
     @commands.guild_only()
-    @commands.is_owner()
+    @discord.ext.commands.has_permissions(ban_members=True)
     async def disable_baba(ctx: discord.ext.commands.context.Context) -> None:
         ctx.bot.tree.clear_commands(guild=ctx.guild)
         await ctx.bot.tree.sync(guild=ctx.guild)
@@ -156,7 +156,7 @@ if __name__ == "__main__":
 
     @bot.command()
     @commands.guild_only()
-    @commands.is_owner()
+    @discord.ext.commands.has_permissions(ban_members=True)
     async def enable_baba(ctx: discord.ext.commands.context.Context) -> None:
         try:
             logging.info(f"Manual slash command sync for guild '{ctx.guild}'")
