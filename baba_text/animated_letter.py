@@ -13,7 +13,14 @@ class AnimatedLetter(AnimatedObject):
     ) -> None:
         try:
             super().__init__(
-                urllib.parse.quote(letter.upper()), box, text_color, background_color
+                AnimatedLetter.url_encode(letter.upper()), box, text_color, background_color
             )
         except FileNotFoundError:
             raise FileNotFoundError(f"Got illegal character: {letter}")
+        
+    @staticmethod   
+    def url_encode(character):
+        if character == "/":
+            return "%2F"
+        else:
+            return urllib.parse.quote(character)
