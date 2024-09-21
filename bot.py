@@ -149,10 +149,16 @@ if __name__ == "__main__":
     @commands.guild_only()
     @discord.ext.commands.has_permissions(ban_members=True)
     async def disable_baba(ctx: discord.ext.commands.context.Context) -> None:
-        ctx.bot.tree.clear_commands(guild=ctx.guild)
-        await ctx.bot.tree.sync(guild=ctx.guild)
-        logging.info(f"Cleared slash commands for guild '{ctx.guild}'")
-        await ctx.send("baba is stop")
+        logging.info(f"Clearing slash commands for guild '{ctx.guild}'")
+        try:
+            ctx.bot.tree.clear_commands(guild=ctx.guild)
+            await ctx.bot.tree.sync(guild=ctx.guild)
+        except Exception as e:
+            logging.error(f"Error while clearing commands on guild {ctx.guild}: {e}")
+            await ctx.send(f"baba is not stop. baba has error. you is wait.")
+        else:
+            logging.info(f"Cleared slash commands for guild '{ctx.guild}'")
+            await ctx.send("baba is stop")
 
     @bot.command()
     @commands.guild_only()
