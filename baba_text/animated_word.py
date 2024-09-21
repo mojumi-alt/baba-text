@@ -5,6 +5,7 @@ from .constants import (
     MAX_LETTER_HEIGHT,
     LETTER_WIDTH_TO_HEIGHT_RATIO,
     BACKGROUND_COLOR,
+    BACKGROUND_SPRITE_FILENAME,
 )
 from .animated_object import AnimatedObject
 
@@ -24,7 +25,9 @@ class AnimatedWord(AnimatedObject):
             AnimatedLetter(c, b, text_color, background_color)
             for c, b in zip(text, self.__fit_text_to_this_box())
         ]
-        super().__init__("sprite", box, background_color, BACKGROUND_COLOR)
+        super().__init__(
+            BACKGROUND_SPRITE_FILENAME, box, background_color, BACKGROUND_COLOR
+        )
 
     def advance_animation(self):
         super().advance_animation()

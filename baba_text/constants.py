@@ -1,4 +1,7 @@
 import pygame
+import os
+from glob import glob
+import urllib
 
 NEWLINE = "\n"
 TAB = "\t"
@@ -12,6 +15,33 @@ LETTER_WIDTH_TO_HEIGHT_RATIO = 0.8
 RESOURCE_DIR = "./resources"
 ANIMATION_FRAME_COUNT = 6
 COLOR_WHITE = pygame.Color(255, 255, 255)
+BACKGROUND_SPRITE_FILENAME = "sprite"
+
+
+# Automatically determine what characters we support for text.
+# Not pretty but gets the job done...
+def get_allowed_characters() -> set[str]:
+    allowed = set()
+
+    for file in glob(os.path.join(RESOURCE_DIR, f"*_*.png")):
+        letter = file.split("/")[-1]
+
+        # Underscore is special because its a valid letter but also separator...
+        if letter.startswith("_") or letter.startswith(BACKGROUND_SPRITE_FILENAME):
+            continue
+
+        decoded = urllib.parse.unquote(letter.split("_")[0])
+
+        # We lower case letter are also allowed...
+        allowed.add(decoded)
+        if decoded.lower() != decoded.upper():
+            allowed.add(decoded.lower())
+
+    allowed.update([SPACE, TAB, NEWLINE, "_"])
+
+    return allowed
+
+
 COLOR_PALETTE = {
     "gray": pygame.Color(128, 128, 128),
     "yellow": pygame.Color(255, 255, 60),
@@ -23,14 +53,14 @@ COLOR_PALETTE = {
     "purple": pygame.Color(120, 120, 255),
     "dark_blue": pygame.Color(20, 20, 200),
     "blue": pygame.Color(60, 60, 255),
-    "light_blue": pygame.Color(60, 160, 255),
+    "black": pygame.Color(0, 0, 0),
     "pink": pygame.Color(255, 120, 255),
     "dark_pink": pygame.Color(255, 60, 255),
     "dark_green": pygame.Color(60, 160, 60),
     "green": pygame.Color(60, 255, 60),
     "light_green": pygame.Color(120, 255, 120),
     "brown": pygame.Color(150, 100, 70),
-    "black": pygame.Color(0, 0, 0),
+    "light_blue": pygame.Color(60, 160, 255),
 }
 
 KNOWN_WORDS_TO_COLOR = {
@@ -48,7 +78,7 @@ KNOWN_WORDS_TO_COLOR = {
     "Float": COLOR_PALETTE["light_blue"],
     "flag": COLOR_PALETTE["yellow"],
     "Blue": COLOR_PALETTE["blue"],
-    "Red": COLOR_PALETTE["red"],
+    "Red": COLOR_PALETTE["dark_red"],
     "Green": COLOR_PALETTE["green"],
     "Yellow": COLOR_PALETTE["yellow"],
     "Pink": COLOR_PALETTE["pink"],
@@ -65,4 +95,7 @@ KNOWN_WORDS_TO_COLOR = {
     "purple": COLOR_PALETTE["purple"],
     "white": COLOR_WHITE,
     "black": COLOR_PALETTE["black"],
+    "violet": COLOR_PALETTE["blue"],
+    "rose": COLOR_PALETTE["dark_red"],
+    "Win": COLOR_PALETTE["yellow"],
 }
