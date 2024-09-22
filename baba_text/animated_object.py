@@ -37,7 +37,6 @@ class AnimatedObject:
         ) % len(self.__sprites)
 
     def draw(self, surface: np.ndarray) -> None:
-        
         # Careful: Numpy is column major (we need to flip x and y)
         surface[
             self.__box.top : self.__box.bottom, self.__box.left : self.__box.right
@@ -49,9 +48,9 @@ class AnimatedObject:
 
         for file in files:
             image = np.array(
-                Image.open(file).resize(
-                    self.__box.size, resample=Image.Resampling.NEAREST
-                )
+                Image.open(file)
+                .convert("RGBA")
+                .resize(self.__box.size, resample=Image.Resampling.NEAREST)
             )
             foreground_mask = np.any(image != MASK_COLOR, axis=2)
             background_mask = np.all(image == MASK_COLOR, axis=2)
