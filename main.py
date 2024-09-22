@@ -7,4 +7,4 @@ if __name__ == "__main__":
             f"Expected 2 arguments (input string to convert and output file name), got {len(sys.argv) - 1} instead!"
         )
 
-    AnimatedText(sys.argv[1]).write_to_gif(sys.argv[2])
+    AnimatedText(sys.argv[1].replace("\\n", "\n").replace("\\t", "\t")).write_to_gif(sys.argv[2])
