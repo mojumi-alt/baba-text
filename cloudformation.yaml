@@ -21,6 +21,7 @@ Resources:
               awslogs-stream-prefix: ecs
           Name: baba-text-bot
       ExecutionRoleArn: !Ref ECSExecutionRoleArn
+      family: baba-text-bot-task-family
       Cpu: 256
       Memory: 512
       NetworkMode: awsvpc
