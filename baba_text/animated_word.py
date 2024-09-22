@@ -1,5 +1,4 @@
 from .animated_letter import AnimatedLetter
-import pygame
 from math import sqrt, floor, ceil
 from .constants import (
     MAX_LETTER_HEIGHT,
@@ -8,15 +7,18 @@ from .constants import (
     BACKGROUND_SPRITE_FILENAME,
 )
 from .animated_object import AnimatedObject
+from .rect import Rect
+from .color import Color
+import numpy as np
 
 
 class AnimatedWord(AnimatedObject):
     def __init__(
         self,
         text: str,
-        box: pygame.Rect,
-        text_color: pygame.Color,
-        background_color: pygame.Color,
+        box: Rect,
+        text_color: Color,
+        background_color: Color,
     ) -> None:
         self.__text = text
         assert self.__text
@@ -34,12 +36,12 @@ class AnimatedWord(AnimatedObject):
         for letter in self.__letters:
             letter.advance_animation()
 
-    def draw(self, surface: pygame.Surface) -> None:
+    def draw(self, surface: np.ndarray) -> None:
         super().draw(surface)
         for letter in self.__letters:
             letter.draw(surface)
 
-    def __fit_text_to_this_box(self) -> list[pygame.Rect]:
+    def __fit_text_to_this_box(self) -> list[Rect]:
         row_count = int(floor(sqrt(len(self.__text))))
         per_row = int(ceil(len(self.__text) / row_count))
 
@@ -79,7 +81,7 @@ class AnimatedWord(AnimatedObject):
         for i in range(row_count - 1):
             for j in range(per_row):
                 rectangles.append(
-                    pygame.Rect(
+                    Rect(
                         offset_x + self.__box.left + j * (letter_width),
                         offset_y + self.__box.top + i * (letter_height),
                         letter_width,
@@ -94,7 +96,7 @@ class AnimatedWord(AnimatedObject):
             extra_x_offset = (width_of_full_row - width_of_remaining) / 2
             for j in range(remaining):
                 rectangles.append(
-                    pygame.Rect(
+                    Rect(
                         extra_x_offset + offset_x + self.__box.left + j * letter_width,
                         offset_y + self.__box.top + (row_count - 1) * letter_height,
                         letter_width,
@@ -104,7 +106,7 @@ class AnimatedWord(AnimatedObject):
         else:
             for j in range(per_row):
                 rectangles.append(
-                    pygame.Rect(
+                    Rect(
                         offset_x + self.__box.left + j * letter_width,
                         offset_y + self.__box.top + (row_count - 1) * letter_height,
                         letter_width,

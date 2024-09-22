@@ -1,15 +1,16 @@
-import pygame
 from .animated_object import AnimatedObject
 import urllib.parse
+from .rect import Rect
+from .color import Color
 
 
 class AnimatedLetter(AnimatedObject):
     def __init__(
         self,
         letter: str,
-        box: pygame.Rect,
-        text_color: pygame.Color,
-        background_color: pygame.Color,
+        box: Rect,
+        text_color: Color,
+        background_color: Color,
     ) -> None:
         try:
             super().__init__(

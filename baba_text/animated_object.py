@@ -1,17 +1,20 @@
-import pygame
 from .constants import RESOURCE_DIR, MASK_COLOR
 from glob import glob
 import os
 import random
+from .rect import Rect
+from .color import Color
+import numpy as np
+from PIL import Image
 
 
 class AnimatedObject:
     def __init__(
         self,
         name: str,
-        box: pygame.Rect,
-        foreground_color: pygame.Color,
-        background_color: pygame.Color,
+        box: Rect,
+        foreground_color: Color,
+        background_color: Color,
     ) -> None:
         self.__name = name
         self.__box = box
@@ -33,23 +36,25 @@ class AnimatedObject:
             self.__current_animation_index + offset
         ) % len(self.__sprites)
 
-    def draw(self, surface: pygame.Surface) -> None:
-        surface.blit(self.__sprites[self.__current_animation_index], self.__box.topleft)
+    def draw(self, surface: np.ndarray) -> None:
+        surface[
+            self.__box.top : self.__box.bottom, self.__box.left : self.__box.right
+        ] = self.__sprites[self.__current_animation_index]
 
-    def __load_images(self) -> list[pygame.Surface]:
+    def __load_images(self) -> list[np.ndarray]:
         files = glob(os.path.join(RESOURCE_DIR, f"{self.__name}_*.png"))
-        images = [pygame.image.load(f) for f in files]
+        images = []
 
-        # Change the text and background color and
-        # scale the image to the bounding box of the letter
-        for i, image in enumerate(images):
-            for y in range(image.get_height()):
-                for x in range(image.get_width()):
-                    if image.get_at((x, y)) == MASK_COLOR:
-                        image.set_at((x, y), self.__background_color)
-                    else:
-                        image.set_at((x, y), self.__foreground_color)
-
-            images[i] = pygame.transform.scale(image, self.__box.size)
+        for file in files:
+            image = np.array(
+                Image.open(file).resize(
+                    self.__box.size, resample=Image.Resampling.NEAREST
+                )
+            )
+            foreground_mask = np.any(image != MASK_COLOR, axis=2)
+            background_mask = np.all(image == MASK_COLOR, axis=2)
+            image[foreground_mask] = self.__foreground_color
+            image[background_mask] = self.__background_color
+            images.append(image)
 
         return images

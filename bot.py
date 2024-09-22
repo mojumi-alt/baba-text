@@ -9,7 +9,6 @@ import queue
 import traceback
 import logging
 
-os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 from baba_text.constants import get_allowed_characters
 
 logging.basicConfig(
@@ -117,7 +116,7 @@ if __name__ == "__main__":
                 return
 
         # Run conversion in separate process, this way we ensure
-        # no potential pygame issues leak into the bot.
+        # no potential issues leak into the bot.
         output_queue: multiprocessing.Queue = multiprocessing.Queue()
         process = multiprocessing.Process(
             target=run_baba_text_gen, args=(message, output_queue)

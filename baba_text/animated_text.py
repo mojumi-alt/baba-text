@@ -1,7 +1,9 @@
 from .animated_word import AnimatedWord
-import pygame
 import imageio
 from io import BytesIO
+import numpy as np
+from .rect import Rect
+from .color import Color
 from .constants import (
     BACKGROUND_COLOR,
     SPRITE_SIZE,
@@ -12,6 +14,11 @@ from .constants import (
     NEWLINE,
     TAB,
     SPACE,
+    COLOR_BYTE_DEPTH,
+    GIF_DISPOSAL_MODE,
+    GIF_LOOP_MODE,
+    GIF_FORMAT_HINT,
+    GIF_PLUGIN,
 )
 
 
@@ -52,30 +59,33 @@ class AnimatedText:
         with open(filename, "wb") as f:
             f.write(self.write_to_buffer().getbuffer())
 
-    def write_to_buffer(self):
-        pygame.init()
-        screen = pygame.Surface(self.__size)
-
+    def write_to_buffer(self) -> BytesIO:
         frames = []
 
         for _ in range(ANIMATION_FRAME_COUNT):
-            screen.fill(BACKGROUND_COLOR)
+            screen = np.full(
+                (*self.__size, COLOR_BYTE_DEPTH), BACKGROUND_COLOR, dtype=np.uint8
+            )
             for word in self.__words:
                 word.draw(screen)
                 word.advance_animation()
 
-            frame = BytesIO()
-            pygame.image.save(screen, frame)
-            frame.seek(0)
-            frames.append(imageio.v3.imread(frame))
+            frames.append(screen)
 
         result = BytesIO()
-        imageio.mimsave(result, [*frames], format="gif", fps=ANIMATION_FPS, loop=0)
+        imageio.v3.imwrite(
+            result,
+            frames,
+            format_hint=GIF_FORMAT_HINT,
+            plugin=GIF_PLUGIN,
+            fps=ANIMATION_FPS,
+            loop=GIF_LOOP_MODE,
+            disposal=GIF_DISPOSAL_MODE,
+        )
         result.seek(0)
-        pygame.quit()
         return result
 
-    def __generate_word_layout(self) -> list[pygame.Rect]:
+    def __generate_word_layout(self) -> list[Rect]:
         result = []
         x = 0
         y = 0
@@ -89,7 +99,7 @@ class AnimatedText:
                 continue
 
             result.append(
-                pygame.Rect(x * SPRITE_SIZE, y * SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE)
+                Rect(x * SPRITE_SIZE, y * SPRITE_SIZE, SPRITE_SIZE, SPRITE_SIZE)
             )
             x += 1
 
@@ -100,7 +110,7 @@ class AnimatedText:
         return sum(ord(c) for c in word)
 
     @staticmethod
-    def __get_word_color(word: str) -> tuple[pygame.Color, pygame.Color]:
+    def __get_word_color(word: str) -> tuple[Color, Color]:
         color_values = list(COLOR_PALETTE.values())
         lookup_color = (
             KNOWN_WORDS_TO_COLOR[word]

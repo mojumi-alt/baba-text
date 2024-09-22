@@ -1,7 +1,4 @@
-import os
 import sys
-
-os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 from baba_text.animated_text import AnimatedText
 
 if __name__ == "__main__":
