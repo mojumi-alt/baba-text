@@ -37,6 +37,8 @@ class AnimatedObject:
         ) % len(self.__sprites)
 
     def draw(self, surface: np.ndarray) -> None:
+        
+        # Careful: Numpy is column major (we need to flip x and y)
         surface[
             self.__box.top : self.__box.bottom, self.__box.left : self.__box.right
         ] = self.__sprites[self.__current_animation_index]
