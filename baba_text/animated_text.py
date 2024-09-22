@@ -78,9 +78,9 @@ class AnimatedText:
         imageio.v3.imwrite(
             result,
             frames,
-            format_hint=GIF_FORMAT_HINT,
+            extension=GIF_FORMAT_HINT,
             plugin=GIF_PLUGIN,
-            fps=ANIMATION_FPS,
+            duration=(1000 * 1 / ANIMATION_FPS),
             loop=GIF_LOOP_MODE,
             disposal=GIF_DISPOSAL_MODE,
         )
