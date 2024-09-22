@@ -71,6 +71,9 @@ COLOR_PALETTE = {
 KNOWN_WORDS_TO_COLOR = {
     "baba": COLOR_PALETTE["red"],
     "You": COLOR_PALETTE["red"],
+    "keke": COLOR_PALETTE["orange"],
+    "rock": COLOR_PALETTE["brown"],
+    "Sink": COLOR_PALETTE["light_blue"],
     "is": COLOR_WHITE,
     "and": COLOR_WHITE,
     "not": COLOR_PALETTE["red"],

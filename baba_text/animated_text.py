@@ -63,10 +63,11 @@ class AnimatedText:
         frames = []
 
         for _ in range(ANIMATION_FRAME_COUNT):
-
             # Careful: Numpy is column major (we need to flip x and y)
             screen = np.full(
-                (self.__size[1], self.__size[0], COLOR_BYTE_DEPTH), BACKGROUND_COLOR, dtype=np.uint8
+                (self.__size[1], self.__size[0], COLOR_BYTE_DEPTH),
+                BACKGROUND_COLOR,
+                dtype=np.uint8,
             )
             for word in self.__words:
                 word.draw(screen)
