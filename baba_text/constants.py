@@ -74,6 +74,7 @@ KNOWN_WORDS_TO_COLOR = {
     "keke": COLOR_PALETTE["orange"],
     "rock": COLOR_PALETTE["brown"],
     "Sink": COLOR_PALETTE["light_blue"],
+    "text": COLOR_PALETTE["red"],
     "is": COLOR_WHITE,
     "and": COLOR_WHITE,
     "not": COLOR_PALETTE["red"],
