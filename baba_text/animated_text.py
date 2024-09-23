@@ -5,7 +5,7 @@ import numpy as np
 from .rect import Rect
 from .color import Color
 from .constants import (
-    BACKGROUND_COLOR,
+    TRANSPARENT_COLOR,
     SPRITE_SIZE,
     ANIMATION_FPS,
     ANIMATION_FRAME_COUNT,
@@ -23,9 +23,10 @@ from .constants import (
 
 
 class AnimatedText:
-    def __init__(self, text: str) -> None:
+    def __init__(self, text: str, background_color: Color = TRANSPARENT_COLOR) -> None:
         assert text, "Text must not be empty"
         self.__tokens = AnimatedText.__tokenize_input_text(text)
+        self.__background_color = background_color
 
         word_layout = self.__generate_word_layout()
         self.__size = (
@@ -34,7 +35,7 @@ class AnimatedText:
         )
 
         self.__words = [
-            AnimatedWord(word, box, *AnimatedText.__get_word_color(word))
+            AnimatedWord(word, box, *self.__get_word_color(word), background_color)
             for word, box in zip(
                 AnimatedText.__remove_control_sequences(self.__tokens), word_layout
             )
@@ -66,7 +67,7 @@ class AnimatedText:
             # Careful: Numpy is column major (we need to flip x and y)
             screen = np.full(
                 (self.__size[1], self.__size[0], COLOR_BYTE_DEPTH),
-                BACKGROUND_COLOR,
+                self.__background_color,
                 dtype=np.uint8,
             )
             for word in self.__words:
@@ -112,8 +113,7 @@ class AnimatedText:
     def __get_word_hash(word):
         return sum(ord(c) for c in word)
 
-    @staticmethod
-    def __get_word_color(word: str) -> tuple[Color, Color]:
+    def __get_word_color(self, word: str) -> tuple[Color, Color]:
         color_values = list(COLOR_PALETTE.values())
         lookup_color = (
             KNOWN_WORDS_TO_COLOR[word]
@@ -121,6 +121,6 @@ class AnimatedText:
             else color_values[AnimatedText.__get_word_hash(word) % len(color_values)]
         )
         if word[0].isupper():
-            return BACKGROUND_COLOR, lookup_color
+            return self.__background_color, lookup_color
         else:
-            return lookup_color, BACKGROUND_COLOR
+            return lookup_color, self.__background_color

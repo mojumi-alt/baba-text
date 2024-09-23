@@ -3,7 +3,6 @@ from math import sqrt, floor, ceil
 from .constants import (
     MAX_LETTER_HEIGHT,
     LETTER_WIDTH_TO_HEIGHT_RATIO,
-    BACKGROUND_COLOR,
     BACKGROUND_SPRITE_FILENAME,
 )
 from .animated_object import AnimatedObject
@@ -18,17 +17,18 @@ class AnimatedWord(AnimatedObject):
         text: str,
         box: Rect,
         text_color: Color,
+        sprite_color: Color,
         background_color: Color,
     ) -> None:
         self.__text = text
         assert self.__text
         self.__box = box
         self.__letters = [
-            AnimatedLetter(c, b, text_color, background_color)
+            AnimatedLetter(c, b, text_color, sprite_color)
             for c, b in zip(text, self.__fit_text_to_this_box())
         ]
         super().__init__(
-            BACKGROUND_SPRITE_FILENAME, box, background_color, BACKGROUND_COLOR
+            BACKGROUND_SPRITE_FILENAME, box, sprite_color, background_color
         )
 
     def advance_animation(self):

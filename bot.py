@@ -9,7 +9,8 @@ import queue
 import traceback
 import logging
 
-from baba_text.constants import get_allowed_characters
+from baba_text.constants import get_allowed_characters, TRANSPARENT_COLOR
+from baba_text.color import Color
 
 logging.basicConfig(
     level=logging.INFO,
@@ -34,6 +35,8 @@ UNESCAPE_SEQUENCES = [
     ("😦", ":("),
 ]
 
+ALTERNATE_BACKGROUND_COLOR = Color(0, 0, 0)
+
 
 def preprocess_message(message: str) -> str:
     for sequence, replacement in UNESCAPE_SEQUENCES:
@@ -41,11 +44,16 @@ def preprocess_message(message: str) -> str:
     return message
 
 
-def run_baba_text_gen(text: str, output_queue: multiprocessing.Queue) -> None:
+def run_baba_text_gen(
+    text: str, transparent_background: bool, output_queue: multiprocessing.Queue
+) -> None:
     from baba_text.animated_text import AnimatedText
 
     try:
-        animated_text = AnimatedText(text)
+        animated_text = AnimatedText(
+            text,
+            TRANSPARENT_COLOR if transparent_background else ALTERNATE_BACKGROUND_COLOR,
+        )
         output_queue.put(animated_text.write_to_buffer())
     except:
         logging.error(traceback.format_exc())
@@ -93,7 +101,9 @@ if __name__ == "__main__":
 
     # Commands
     @bot.tree.command()
-    async def baba_says(interaction: discord.Interaction, text: str) -> None:
+    async def baba_says(
+        interaction: discord.Interaction, text: str, transparent_background: bool = True
+    ) -> None:
         """
         Converts your message to baba style gif.
         Use \\t for horizontal and \\n for vertical spacing.
@@ -119,7 +129,8 @@ if __name__ == "__main__":
         # no potential issues leak into the bot.
         output_queue: multiprocessing.Queue = multiprocessing.Queue()
         process = multiprocessing.Process(
-            target=run_baba_text_gen, args=(message, output_queue)
+            target=run_baba_text_gen,
+            args=(message, transparent_background, output_queue),
         )
         process.start()
 
