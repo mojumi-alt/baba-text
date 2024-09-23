@@ -15,10 +15,12 @@ from .constants import (
     TAB,
     SPACE,
     COLOR_BYTE_DEPTH,
-    GIF_DISPOSAL_MODE,
+    GIF_DISPOSAL_MODE_TRANSPARENT,
+    GIF_DISPOSAL_MODE_SOLID,
     GIF_LOOP_MODE,
     GIF_FORMAT_HINT,
     GIF_PLUGIN,
+    FULL_ALPHA,
 )
 
 
@@ -84,7 +86,9 @@ class AnimatedText:
             plugin=GIF_PLUGIN,
             duration=(1000 * 1 / ANIMATION_FPS),
             loop=GIF_LOOP_MODE,
-            disposal=GIF_DISPOSAL_MODE,
+            disposal=GIF_DISPOSAL_MODE_TRANSPARENT
+            if self.__background_color.a != FULL_ALPHA
+            else GIF_DISPOSAL_MODE_SOLID,
         )
         result.seek(0)
         return result
