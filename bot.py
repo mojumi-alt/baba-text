@@ -35,7 +35,7 @@ UNESCAPE_SEQUENCES = [
     ("😦", ":("),
 ]
 
-ALTERNATE_BACKGROUND_COLOR = Color(0, 0, 0)
+ALTERNATE_BACKGROUND_COLOR = Color(49, 51, 56)
 
 
 def preprocess_message(message: str) -> str:
