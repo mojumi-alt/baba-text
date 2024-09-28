@@ -8,6 +8,10 @@ OUTPUT_DIR = "./output"
 
 
 class TestCharacters(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+
     def test_alphabet(self):
         AnimatedText(" ".join(string.ascii_lowercase)).write_to_gif(
             os.path.join(OUTPUT_DIR, "alphabet.gif")
@@ -45,6 +49,11 @@ class TestCharacters(unittest.TestCase):
             '"',
             "+",
             "?",
+            "$",
+            "&",
+            "~",
+            "^",
+            ".",
         ]
         AnimatedText(" ".join(special_chars)).write_to_gif(
             os.path.join(OUTPUT_DIR, "special.gif")

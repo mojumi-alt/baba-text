@@ -9,6 +9,10 @@ class Rect:
     def left(self) -> int:
         return self.__left
 
+    @left.setter
+    def left(self, value: float) -> None:
+        self.__left = round(value)
+
     @property
     def right(self) -> int:
         return self.__left + self.__width
@@ -16,6 +20,10 @@ class Rect:
     @property
     def top(self) -> int:
         return self.__top
+
+    @top.setter
+    def top(self, value: float) -> None:
+        self.__top = round(value)
 
     @property
     def bottom(self) -> int:

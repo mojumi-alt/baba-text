@@ -7,6 +7,10 @@ OUTPUT_DIR = "./output"
 
 
 class TestLayout(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        os.makedirs(OUTPUT_DIR, exist_ok=True)
+
     def test_newlines(self):
         AnimatedText("\nA B C\nD E \n F \n\n X\nY\n").write_to_gif(
             os.path.join(OUTPUT_DIR, "newlines.gif")

@@ -58,11 +58,7 @@ class AnimatedText:
         # Ensure every word is separated by exactly one space
         return list(filter(lambda x: len(x) > 0, result.split(SPACE)))
 
-    def write_to_gif(self, filename: str) -> None:
-        with open(filename, "wb") as f:
-            f.write(self.write_to_buffer().getbuffer())
-
-    def write_to_buffer(self) -> BytesIO:
+    def write_raw_frames(self) -> list[np.ndarray]:
         frames = []
 
         for _ in range(ANIMATION_FRAME_COUNT):
@@ -78,10 +74,17 @@ class AnimatedText:
 
             frames.append(screen)
 
+        return frames
+
+    def write_to_gif(self, filename: str) -> None:
+        with open(filename, "wb") as f:
+            f.write(self.write_to_buffer().getbuffer())
+
+    def write_to_buffer(self) -> BytesIO:
         result = BytesIO()
         imageio.v3.imwrite(
             result,
-            frames,
+            self.write_raw_frames(),
             extension=GIF_FORMAT_HINT,
             plugin=GIF_PLUGIN,
             duration=(1000 * 1 / ANIMATION_FPS),
