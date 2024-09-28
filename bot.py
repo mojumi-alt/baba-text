@@ -9,6 +9,7 @@ import traceback
 import logging
 from io import BytesIO
 from PIL import Image
+import math
 
 from baba_text.constants import get_allowed_characters, TRANSPARENT_COLOR
 from baba_text.color import Color
@@ -73,7 +74,7 @@ def run_baba_draws(
     image = Image.open(input_image)
     longer_side = max(image.width, image.height)
     pixels_per_character = (
-        int(longer_side / ASCII_MAX_DIMENSION)
+        math.ceil(longer_side / ASCII_MAX_DIMENSION)
         if longer_side > ASCII_MAX_DIMENSION
         else 1
     )
@@ -199,7 +200,7 @@ if __name__ == "__main__":
         transparent_background: bool = True,
         greyscale: bool = False,
     ) -> None:
-        logging.info(f"Processing image: {image.filename}")
+        logging.info(f"Processing image '{image.filename}' for guild '{interaction.guild}'")
         await interaction.response.defer()
 
         # Lets hope discord limits the size for us...
@@ -233,7 +234,7 @@ if __name__ == "__main__":
                     file=discord.File(result, filename="baba_text.gif")
                 )
         finally:
-            logging.info(f"Processed image: {image.filename}")
+            logging.info(f"Processed image '{image.filename}' for guild '{interaction.guild}'")
 
     @bot.command()
     @commands.guild_only()
