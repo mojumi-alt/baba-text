@@ -31,7 +31,7 @@ import imageio
 class AnimatedAsciiArt:
     def __init__(
         self,
-        image: str | BinaryIO,
+        image: str | BinaryIO | Image.Image,
         pixels_per_character: int = DEFAULT_PIXEL_PER_CHARACTERS,
         greyscale: bool = False,
         color_ramp: str = generate_ascii_color_ramp(),
@@ -47,7 +47,11 @@ class AnimatedAsciiArt:
 
         self.__images = []
         self.__durations = []
-        loaded_image = Image.open(image)
+
+        if type(image) == Image.Image:
+            loaded_image = image
+        else:
+            loaded_image = Image.open(image)  # type: ignore
 
         # Check if input is iterable like a gif or similar...
         if hasattr(loaded_image, "n_frames") and loaded_image.n_frames > 1:

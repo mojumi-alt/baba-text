@@ -1,5 +1,4 @@
 import multiprocessing.queues
-import sys
 import discord
 from discord.ext import commands
 import multiprocessing
@@ -8,6 +7,8 @@ import json
 import queue
 import traceback
 import logging
+from io import BytesIO
+from PIL import Image
 
 from baba_text.constants import get_allowed_characters, TRANSPARENT_COLOR
 from baba_text.color import Color
@@ -19,6 +20,7 @@ logging.basicConfig(
 )
 
 BOT_REQUEST_TIMEOUT_SECONDS = 10
+ASCII_MAX_DIMENSION = 64
 ALLOWED_CHARACTERS = get_allowed_characters()
 DISCORD_BOT_TOKEN_ENV_VAR = "DISCORD_BOT_TOKEN"
 DISCORD_BOT_TOKEN_SECRET_KEY = "DISCORD_BOT_TOKEN"
@@ -44,7 +46,7 @@ def preprocess_message(message: str) -> str:
     return message
 
 
-def run_baba_text_gen(
+def run_baba_says(
     text: str, transparent_background: bool, output_queue: multiprocessing.Queue
 ) -> None:
     from baba_text.animated_text import AnimatedText
@@ -55,6 +57,40 @@ def run_baba_text_gen(
             TRANSPARENT_COLOR if transparent_background else ALTERNATE_BACKGROUND_COLOR,
         )
         output_queue.put(animated_text.write_to_buffer())
+    except:
+        logging.error(traceback.format_exc())
+        output_queue.put(None)
+
+
+def run_baba_draws(
+    input_image: BytesIO,
+    transparent_background: bool,
+    greyscale: bool,
+    output_queue: multiprocessing.Queue,
+) -> None:
+    from baba_text.animated_ascii_art import AnimatedAsciiArt
+
+    image = Image.open(input_image)
+    longer_side = max(image.width, image.height)
+    pixels_per_character = (
+        int(longer_side / ASCII_MAX_DIMENSION)
+        if longer_side > ASCII_MAX_DIMENSION
+        else 1
+    )
+
+    logging.info(
+        f"Image: ({image.width}, {image.height}) -> ppc = {pixels_per_character}"
+    )
+    try:
+        art = AnimatedAsciiArt(
+            input_image,
+            pixels_per_character=pixels_per_character,
+            greyscale=greyscale,
+            background_color=TRANSPARENT_COLOR
+            if transparent_background
+            else ALTERNATE_BACKGROUND_COLOR,
+        )
+        output_queue.put(art.write_to_buffer())
     except:
         logging.error(traceback.format_exc())
         output_queue.put(None)
@@ -112,6 +148,7 @@ if __name__ == "__main__":
         logging.info(
             f"Processing message of length {len(text)} for guild '{interaction.guild}'"
         )
+        await interaction.response.defer()
 
         # Validate input text
         message = preprocess_message(text)
@@ -120,7 +157,7 @@ if __name__ == "__main__":
                 logging.error(
                     f"Message in guild '{interaction.guild}' contains invalid character '{c}'"
                 )
-                await interaction.response.send_message(
+                await interaction.followup.send(
                     f"message has error. '{c}' is not allowed.", ephemeral=True
                 )
                 return
@@ -129,7 +166,7 @@ if __name__ == "__main__":
         # no potential issues leak into the bot.
         output_queue: multiprocessing.Queue = multiprocessing.Queue()
         process = multiprocessing.Process(
-            target=run_baba_text_gen,
+            target=run_baba_says,
             args=(message, transparent_background, output_queue),
         )
         process.start()
@@ -137,23 +174,66 @@ if __name__ == "__main__":
         try:
             result = output_queue.get(timeout=BOT_REQUEST_TIMEOUT_SECONDS)
         except queue.Empty:
-            await interaction.response.send_message(
-                "message is long. baba is sad.", ephemeral=True
+            await interaction.followup.send(
+                "image is big. baba is sad.", ephemeral=True
             )
         else:
             process.join(timeout=1)
             if process.exitcode != 0 or result is None:
-                await interaction.response.send_message(
-                    "message has error. baba is sad.", ephemeral=True
+                await interaction.followup.send(
+                    "image has error. baba is sad. format is not supported.", ephemeral=True
                 )
             else:
-                await interaction.response.send_message(
+                await interaction.followup.send(
                     file=discord.File(result, filename="baba_text.gif")
                 )
         finally:
             logging.info(
                 f"Processed message of length {len(text)} for guild '{interaction.guild}'"
             )
+
+    @bot.tree.command()
+    async def baba_draws(
+        interaction: discord.Interaction,
+        image: discord.Attachment,
+        transparent_background: bool = True,
+        greyscale: bool = False,
+    ) -> None:
+        logging.info(f"Processing image: {image.filename}")
+        await interaction.response.defer()
+
+        # Lets hope discord limits the size for us...
+        buffer = BytesIO()
+        buffer.write(await image.read())
+        logging.info(f"Image size in bytes: {buffer.tell()}")
+
+        # Run conversion in separate process, this way we ensure
+        # no potential issues leak into the bot.
+        output_queue: multiprocessing.Queue = multiprocessing.Queue()
+        process = multiprocessing.Process(
+            target=run_baba_draws,
+            args=(buffer, transparent_background, greyscale, output_queue),
+        )
+        process.start()
+
+        try:
+            result = output_queue.get(timeout=BOT_REQUEST_TIMEOUT_SECONDS)
+        except queue.Empty:
+            await interaction.followup.send(
+                "message is long. baba is sad.", ephemeral=True
+            )
+        else:
+            process.join(timeout=1)
+            if process.exitcode != 0 or result is None:
+                await interaction.followup.send(
+                    "message has error. baba is sad.", ephemeral=True
+                )
+            else:
+                await interaction.followup.send(
+                    file=discord.File(result, filename="baba_text.gif")
+                )
+        finally:
+            logging.info(f"Processed image: {image.filename}")
 
     @bot.command()
     @commands.guild_only()
