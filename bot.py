@@ -43,9 +43,10 @@ ALTERNATE_BACKGROUND_COLOR = Color(49, 51, 56)
 
 
 class YesNoDialog(discord.ui.View):
-    def __init__(self, attachment: discord.File, timeout: float | None = 180):
+    def __init__(self, attachment: discord.File, original_interaction: discord.Interaction, timeout: float | None = 180):
         super().__init__(timeout=timeout)
         self.__attachment = attachment
+        self.__original_interaction = original_interaction
 
     @discord.ui.button(label="Yes", style=discord.ButtonStyle.green)
     async def yes_button(self, interaction: discord.Interaction, _: discord.ui.Button):
@@ -53,13 +54,14 @@ class YesNoDialog(discord.ui.View):
             content="message is send", attachments=[], view=None
         )
         self.__attachment.reset()
-        await interaction.followup.send(file=self.__attachment, ephemeral=False)
+        await self.__original_interaction.edit_original_response(content="", attachments=[self.__attachment])
 
     @discord.ui.button(label="No", style=discord.ButtonStyle.red)
     async def no_button(self, interaction: discord.Interaction, _: discord.ui.Button):
         await interaction.response.edit_message(
             content="message is not send", attachments=[], view=None
         )
+        await self.__original_interaction.delete_original_response()
 
 
 def preprocess_message(message: str) -> str:
@@ -170,7 +172,7 @@ if __name__ == "__main__":
         logging.info(
             f"Processing message of length {len(text)} for guild '{interaction.guild}'"
         )
-        await interaction.response.defer(ephemeral=True)
+        await interaction.response.defer(ephemeral=False)
 
         # Validate input text
         message = preprocess_message(text)
@@ -179,6 +181,7 @@ if __name__ == "__main__":
                 logging.error(
                     f"Message in guild '{interaction.guild}' contains invalid character '{c}'"
                 )
+                await interaction.delete_original_response()
                 await interaction.followup.send(
                     f"message has error. '{c}' is not allowed.", ephemeral=True
                 )
@@ -196,22 +199,26 @@ if __name__ == "__main__":
         try:
             result = output_queue.get(timeout=BOT_SAY_REQUEST_TIMEOUT_SECONDS)
         except queue.Empty:
+            await interaction.delete_original_response()
             await interaction.followup.send(
-                "image is big. baba is sad.", ephemeral=True
+                "text is long. baba is sad.", ephemeral=True
             )
         else:
             process.join(timeout=1)
             if process.exitcode != 0 or result is None:
+                await interaction.delete_original_response()
                 await interaction.followup.send(
-                    "image has error. baba is sad. format is not supported.",
+                    "text has error. baba is sad.",
                     ephemeral=True,
                 )
             else:
+                await interaction.edit_original_response(content="baba is considering...")
                 result_attachment = discord.File(result, filename="baba_text.gif")
-                await interaction.edit_original_response(
+                await interaction.followup.send(
                     content="baba has preview. message is send?",
-                    attachments=[result_attachment],
-                    view=YesNoDialog(result_attachment),
+                    file=result_attachment,
+                    view=YesNoDialog(result_attachment, interaction),
+                    ephemeral=True
                 )
         finally:
             logging.info(
@@ -228,7 +235,7 @@ if __name__ == "__main__":
         logging.info(
             f"Processing image '{image.filename}' for guild '{interaction.guild}'"
         )
-        await interaction.response.defer(ephemeral=True)
+        await interaction.response.defer(ephemeral=False)
 
         # Lets hope discord limits the size for us...
         buffer = BytesIO()
@@ -247,21 +254,25 @@ if __name__ == "__main__":
         try:
             result = output_queue.get(timeout=BOT_DRAW_REQUEST_TIMEOUT_SECONDS)
         except queue.Empty:
+            await interaction.delete_original_response()
             await interaction.followup.send(
-                "message is long. baba is sad.", ephemeral=True
+                "image is big. baba is sad.", ephemeral=True
             )
         else:
             process.join(timeout=1)
             if process.exitcode != 0 or result is None:
+                await interaction.delete_original_response()
                 await interaction.followup.send(
-                    "message has error. baba is sad.", ephemeral=True
+                    "image has error. baba is sad. format is not supported.", ephemeral=True
                 )
             else:
+                await interaction.edit_original_response(content="baba is considering...")
                 result_attachment = discord.File(result, filename="baba_text.gif")
-                await interaction.edit_original_response(
+                await interaction.followup.send(
                     content="baba has preview. message is send?",
-                    attachments=[result_attachment],
-                    view=YesNoDialog(result_attachment),
+                    file=result_attachment,
+                    view=YesNoDialog(result_attachment, interaction),
+                    ephemeral=True
                 )
         finally:
             logging.info(
