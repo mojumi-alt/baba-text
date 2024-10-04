@@ -4,7 +4,7 @@ A python tool to convert text to animated gifs that look like text from the vide
 # Installation
 The package is currently not available on PyPi you can however install it directly from this repository
     
-    pip3 install https://github.com/mojumi-alt/baba-text
+    pip3 install git+https://github.com/mojumi-alt/baba-text
 
 
 # Usage
