@@ -2,9 +2,9 @@ from baba_text.animated_ascii_art import AnimatedAsciiArt
 import argparse
 from baba_text.constants import COLOR_PALETTE, TRANSPARENT_COLOR
 
-if __name__ == "__main__":
+def main_cli():
     parser = argparse.ArgumentParser(
-        prog="baba draws",
+        prog="baba-draws",
         description="Render a static image or video to a baba ascii art gif",
     )
     parser.add_argument(

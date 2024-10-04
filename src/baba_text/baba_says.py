@@ -2,9 +2,9 @@ from baba_text.animated_text import AnimatedText
 import argparse
 from baba_text.constants import COLOR_PALETTE, TRANSPARENT_COLOR
 
-if __name__ == "__main__":
+def main_cli():
     parser = argparse.ArgumentParser(
-        prog="baba says",
+        prog="baba-says",
         description="Render a sentence as a baba text style gif."
         "Use uppercase letter to denote adjectives."
         "Use \\n and \\t for text layout",

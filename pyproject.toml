@@ -1,0 +1,30 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "baba-text"
+version = "0.0.1"
+authors = [
+  { name="Moritz Milla", email="80782057+mojumi-alt@users.noreply.github.com" },
+]
+description = "A packages that allows baba text processing"
+readme = "README.md"
+requires-python = ">=3.8"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+dynamic = ["dependencies"]
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[project.urls]
+Homepage = "https://github.com/mojumi-alt/baba-text"
+Issues = "https://github.com/mojumi-alt/baba-text/issues"
+
+[project.scripts]
+baba-says = "baba_text.baba_says:main_cli"
+baba-draws = "baba_text.baba_draws:main_cli"
