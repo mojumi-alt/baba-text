@@ -26,3 +26,6 @@ def main_cli():
         if not args.solid
         else COLOR_PALETTE["black"],
     ).write_to_gif(args.output_file)
+
+if __name__ == '__main__':
+    main_cli()
