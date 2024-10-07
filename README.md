@@ -120,3 +120,19 @@ You may also host the bot yourself:
     python3 bot.py
 
 Ensure that baba_text is installed in this case.
+
+# Contributing
+
+## Running tests
+
+    cd src
+    python3 -m unittest discover ../tests
+
+## Running cli tools locally
+
+    PYTHONPATH=./src python3 src/baba_text/baba_says.py "aa" output/result.gif
+
+## Building package
+
+    python3 -m pip install --upgrade build
+    python3 -m build

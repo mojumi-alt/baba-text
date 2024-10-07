@@ -4,7 +4,7 @@ import os
 from baba_text.animated_text import AnimatedText
 from baba_text.color import Color
 
-OUTPUT_DIR = "./output"
+OUTPUT_DIR = "../output"
 
 
 class TestColor(unittest.TestCase):

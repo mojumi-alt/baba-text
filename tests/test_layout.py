@@ -3,7 +3,7 @@ import os
 
 from baba_text.animated_text import AnimatedText
 
-OUTPUT_DIR = "./output"
+OUTPUT_DIR = "../output"
 
 
 class TestLayout(unittest.TestCase):

@@ -6,7 +6,7 @@ from baba_text.animated_text import AnimatedText
 from baba_text.animated_ascii_art import AnimatedAsciiArt
 from PIL import Image
 
-OUTPUT_DIR = "./output"
+OUTPUT_DIR = "../output"
 
 
 class TestAsciiText(unittest.TestCase):

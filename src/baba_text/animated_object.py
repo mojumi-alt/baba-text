@@ -1,4 +1,4 @@
-from .constants import RESOURCE_DIR, MASK_COLOR
+from .constants import ASSETS_DIR, MASK_COLOR
 from glob import glob
 import os
 import random
@@ -80,7 +80,7 @@ class AnimatedObject:
         self.__foreground_color = value
 
     def __load_images(self) -> list[MaskedImage]:
-        files = glob(os.path.join(RESOURCE_DIR, f"{self.__name}_*.png"))
+        files = glob(os.path.join(ASSETS_DIR, f"{self.__name}_*.png"))
         images = []
 
         for file in files:

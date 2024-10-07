@@ -28,3 +28,9 @@ Issues = "https://github.com/mojumi-alt/baba-text/issues"
 [project.scripts]
 baba-says = "baba_text.baba_says:main_cli"
 baba-draws = "baba_text.baba_draws:main_cli"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+"*" = ["*.*"]

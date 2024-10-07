@@ -1,5 +1,4 @@
 import os
-from glob import glob
 import urllib
 from .color import Color
 from PIL import Image
@@ -16,7 +15,6 @@ MAX_LETTER_HEIGHT = 55
 LETTER_WIDTH_TO_HEIGHT_RATIO = 0.8
 RESOURCE_LETTER_HEIGHT = 25
 RESOURCE_LETTER_WIDTH = RESOURCE_LETTER_HEIGHT * LETTER_WIDTH_TO_HEIGHT_RATIO
-RESOURCE_DIR = "./resources"
 ANIMATION_FRAME_COUNT = 6
 COLOR_WHITE = Color(255, 255, 255)
 BACKGROUND_SPRITE_FILENAME = "sprite"
@@ -31,6 +29,9 @@ LETTER_SAMPLE_MODE = Image.Resampling.NEAREST
 DOWNSCALE_SAMPLE_MODE = Image.Resampling.NEAREST
 DEFAULT_PIXEL_PER_CHARACTERS = 30
 
+# Figure out where we are and build path from there...
+ASSETS_DIR = os.path.join(os.path.abspath(os.path.dirname(__file__)), "__assets__") 
+
 
 def get_allowed_characters() -> set[str]:
     """
@@ -39,8 +40,8 @@ def get_allowed_characters() -> set[str]:
 
     allowed = set()
 
-    for file in os.listdir(RESOURCE_DIR):
-        file = os.path.join(RESOURCE_DIR, file)
+    for file in os.listdir(ASSETS_DIR):
+        file = os.path.join(ASSETS_DIR, file)
 
         letter = os.path.basename(file)
 
@@ -68,8 +69,8 @@ def generate_ascii_color_ramp() -> str:
 
     letter_to_brightness: dict[str, int] = {}
 
-    for file in os.listdir(RESOURCE_DIR):
-        file = os.path.join(RESOURCE_DIR, file)
+    for file in os.listdir(ASSETS_DIR):
+        file = os.path.join(ASSETS_DIR, file)
         letter = os.path.basename(file)
 
         # Underscore is special because its a valid letter but also separator...
