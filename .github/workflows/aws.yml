@@ -37,6 +37,7 @@ jobs:
         uses: kitabisa/docker-slim-action@v1
         env:
           DSLIM_HTTP_PROBE: false
+          DSLIM_CONTINUE_AFTER: 10
         with:
           target: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           tag: "slim"
