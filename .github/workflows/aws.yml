@@ -41,4 +41,4 @@ jobs:
           target: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           tag: "slim"
           overwrite: true
-      - run: docker image push "${{ github.repository }}" --all-tags  
+      - run: docker image push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"  
