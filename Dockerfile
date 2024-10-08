@@ -1,4 +1,4 @@
-FROM python:3
+FROM python:3.12
 
 WORKDIR /usr/src/app
 
@@ -9,4 +9,4 @@ COPY ./src/baba_text ./baba_text
 COPY ./tests ./tests
 COPY ./bot.py .
 
-CMD [ "python", "-m", "unittest", "discover", "tests" ]
+CMD [ "python", "bot.py" ]

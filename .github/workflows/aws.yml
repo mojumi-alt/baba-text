@@ -38,6 +38,9 @@ jobs:
         env:
           DSLIM_HTTP_PROBE: false
           DSLIM_CONTINUE_AFTER: 10
+          DSLIM_RC_CMD: "python -m unittest discover tests && timeout 10 python bot.py || exit 0"
+          DSLIM_INCLUDE_PATH_FILE: slim.include
+          DSLIM_RC_ENV: DISCORD_BOT_TOKEN=${{ secrets.BOT_TEST_TOKEN }}
         with:
           target: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           tag: "slim"

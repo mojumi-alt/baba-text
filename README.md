@@ -136,3 +136,7 @@ Ensure that baba_text is installed in this case.
 
     python3 -m pip install --upgrade build
     python3 -m build
+
+## Running docker slim
+
+    slim build --env DISCORD_BOT_TOKEN='{"DISCORD_BOT_TOKEN": "yourtokengoeshere"}' --http-probe=false --include-path-file slim.include --continue-after 10 --exec "python -m unittest discover tests && timeout 10 python bot.py || exit 0" baba-text-bot:latest

@@ -13,6 +13,8 @@ import math
 
 from baba_text.constants import get_allowed_characters, TRANSPARENT_COLOR
 from baba_text.color import Color
+from baba_text.animated_text import AnimatedText
+from baba_text.animated_ascii_art import AnimatedAsciiArt
 
 logging.basicConfig(
     level=logging.INFO,
@@ -73,7 +75,6 @@ def preprocess_message(message: str) -> str:
 def run_baba_says(
     text: str, transparent_background: bool, output_queue: multiprocessing.Queue
 ) -> None:
-    from baba_text.animated_text import AnimatedText
 
     try:
         animated_text = AnimatedText(
@@ -92,7 +93,6 @@ def run_baba_draws(
     greyscale: bool,
     output_queue: multiprocessing.Queue,
 ) -> None:
-    from baba_text.animated_ascii_art import AnimatedAsciiArt
 
     image = Image.open(input_image)
     longer_side = max(image.width, image.height)
