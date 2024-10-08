@@ -37,14 +37,14 @@ jobs:
         with:
           context: .
           push: false
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: latest
           labels: ${{ steps.meta.outputs.labels }}
       - name: Run docker slim
         uses: kitabisa/docker-slim-action@v1
         env:
           DSLIM_HTTP_PROBE: false
         with:
-          target: ${{ github.repository }}:latest
+          target: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           tag: "slim"
           overwrite: true
       - run: docker image push "${{ github.repository }}" --all-tags  
