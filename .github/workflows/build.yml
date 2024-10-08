@@ -45,7 +45,5 @@ jobs:
           target: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           tag: "slim"
           overwrite: true
-      - run: echo "${REPORT}"
-        env:
-          REPORT: ${{ steps.slim.outputs.report }}
-      - run: docker image push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"  
+      - name: Push to ghcr 
+        run: docker image push "${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest"  

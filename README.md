@@ -110,7 +110,7 @@ The commands have the same semantic as the cli tools.
 ## Docker
 The easiest way to run the bot is via the pre-built docker image:
 
-    docker run -e TODO
+    docker run -e DISCORD_BOT_TOKEN='{"DISCORD_BOT_TOKEN": "yourtokengoeshere"}' ghcr.io/mojumi-alt/baba-text:latest
 
 ## Self hosted
 
