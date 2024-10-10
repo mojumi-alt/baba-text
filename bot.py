@@ -3,7 +3,6 @@ import discord
 from discord.ext import commands
 import multiprocessing
 import os
-import json
 import queue
 import traceback
 import logging
@@ -27,8 +26,6 @@ BOT_DRAW_REQUEST_TIMEOUT_SECONDS = 30
 ASCII_MAX_DIMENSION = 64
 ALLOWED_CHARACTERS = get_allowed_characters()
 DISCORD_BOT_TOKEN_ENV_VAR = "DISCORD_BOT_TOKEN"
-DISCORD_BOT_TOKEN_SECRET_KEY = "DISCORD_BOT_TOKEN"
-
 
 # Certain sequences arrive in escaped form from discord.
 # The following sequences are "unescaped" with their replacements:
@@ -125,14 +122,10 @@ def load_bot_token() -> str:
 
     if bot_token is None:
         raise ValueError(
-            f'Failed to start. Set {DISCORD_BOT_TOKEN_ENV_VAR} to \'{{"{DISCORD_BOT_TOKEN_SECRET_KEY}": "yourtokengoeshere"}}\''
+            f'Failed to start. Set {DISCORD_BOT_TOKEN_ENV_VAR} to your bot token'
         )
 
-    parsed_bot_token = json.loads(bot_token)[DISCORD_BOT_TOKEN_SECRET_KEY]
-    if parsed_bot_token is None:
-        raise ValueError("Bot token was provided but is None")
-
-    return parsed_bot_token
+    return bot_token
 
 
 if __name__ == "__main__":

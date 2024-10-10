@@ -110,13 +110,13 @@ The commands have the same semantic as the cli tools.
 ## Docker
 The easiest way to run the bot is via the pre-built docker image:
 
-    docker run -e DISCORD_BOT_TOKEN='{"DISCORD_BOT_TOKEN": "yourtokengoeshere"}' ghcr.io/mojumi-alt/baba-text:latest
+    docker run -e DISCORD_BOT_TOKEN=yourtokengoeshere ghcr.io/mojumi-alt/baba-text:latest
 
 ## Self hosted
 
 You may also host the bot yourself:
 
-    export DISCORD_BOT_TOKEN='{"DISCORD_BOT_TOKEN": "youbottokengoeshere"}'
+    export DISCORD_BOT_TOKEN=youbottokengoeshere
     python3 bot.py
 
 Ensure that baba_text is installed in this case.
@@ -139,4 +139,4 @@ Ensure that baba_text is installed in this case.
 
 ## Running docker slim
 
-    slim build --env DISCORD_BOT_TOKEN='{"DISCORD_BOT_TOKEN": "yourtokengoeshere"}' --http-probe=false --include-path-file slim.include --continue-after 10 --exec "python -m unittest discover tests && timeout 10 python bot.py || exit 0" baba-text-bot:latest
+    slim build --env DISCORD_BOT_TOKEN=yourtokengoeshere --http-probe=false --include-path-file slim.include --continue-after 10 --exec "python -m unittest discover tests && timeout 10 python bot.py || exit 0" baba-text-bot:latest
