@@ -1,2 +1,3 @@
 imageio==2.35.1
 discord.py==2.4.0
+pillow==10.4.0
